@@ -24,7 +24,11 @@ end
 def genCMakeEclipse
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
-	system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+   if( $fLinuxOS )
+	  system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+   else
+     system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+   end
 	Dir.chdir( ".." )
 end
 
@@ -56,6 +60,9 @@ end
 
 
 # === MAIN START ===
+$fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
+$fLinuxOS = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
+$fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
 
 if( ARGV.size == 0 )
 	showUsage
