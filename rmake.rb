@@ -43,12 +43,15 @@ def genCMakeVisualStudio
 end
 
 def showUsage
-	puts "RMake - CMake project file generator\n"
-	puts "Use: rmake <project_name> <source_header_files>*\n\n"
-	puts "To regenerate a CMake file, cd into project folder and type:"
+	puts "RMake - CMake project file generator"
+	puts "Created by Rajinder Yadav <info@devmentor.org>"
+	puts "Copyright (c) DevMentor.org May 21, 2012\n\n"
+	puts "Use: rmake <project_name> <source_header_files>\n\n"
+	puts "To re-generate a CMake project file, cd into the project folder and type:\n\n"
 	puts "rmake g:eclipse - Eclipse CDT project"
 	puts "rmake g:name    - Linux GNU makefile"
 	puts "rmake g:nmake   - VC++ NMake makefile"
+	exit(0)
 end
 
 
