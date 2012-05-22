@@ -15,8 +15,8 @@ alias rmake='~/dev/cpp/scripts/rmake.rb'
 NOTE: make sure to path points to where to have saved rmake.rb
 
 
-Importing the Eclipse project
-=============================
+Importing the Eclipse project (Linux)
+=====================================
 Launch Eclipse and from the file menu select:
 
 File -> New -> "Make project with existing code"
@@ -42,5 +42,49 @@ Next expand on "C/C++ General" and select "Path & Symbols"
 3. Click OK
 
 You should now be able to build and debug your C++ project.
+
+
+Importing the Eclipse project (Windows & VC++)
+==============================================
+
+Now we import our project into Eclipse.
+Launch Eclipse and from the file menu select:
+
+File -> New -> "Make project with existing code"
+
+1. Select "Microsoft Visual C++" for the toochain
+2. browse to the existing project root
+3. click finish
+
+We need to determine where the Include and Lib folder can be found. 
+To do this from VC++ command prompt type:
+
+echo %VSINSTALLDIR%
+echo %WindowsSdkDir%
+
+Once the project is imported, select it and right-click and pick
+"Properties" to bring up the project settings, or use the <Alt+Enter>
+shortcut.
+
+1. Select "C/C++ Build" -> "Settings"
+2. Click on "Linker" -> "Libraries"
+3. Under "Addtional libpath" click on the "+" icon
+4. Enter path to Lib folder, if should be something like
+
+"C:\Program Files\Microsoft SDKs\Windows\v7.0A\Lib"
+or
+"C:\Program Files\Microsoft Visual Studio 10.0\VC\lib"
+
+Next expand on "C/C++ General" and select "Path & Symbols"
+1. Click on the "Source Location" tab
+2. Click "Add Folder" button and select "src" folder
+3. Click OK
+
+We now need to excluse the build folder from the build process.
+1. Right click on the build folder
+2. Select "Resource Configurations" -> "Exclude from build"
+3. Select ALL and click OK
+
+You should be able to build and run your project.
 
 Happy Hacking =)
