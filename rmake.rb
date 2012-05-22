@@ -24,10 +24,10 @@ end
 def genCMakeEclipse
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
-   if( $fLinuxOS )
-	  system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+	if( $fLinuxOS )
+	   system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
    else
-     system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+	   system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
    end
 	Dir.chdir( ".." )
 end
