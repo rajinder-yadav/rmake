@@ -47,7 +47,7 @@ def genCMakeVisualStudio
 end
 
 def showUsage
-	puts "RMake - CMake project file generator"
+	puts "RMake v1.0 - CMake project file generator"
 	puts "Created by Rajinder Yadav <info@devmentor.org>"
 	puts "Copyright (c) DevMentor.org May 21, 2012\n\n"
 	puts "Use: rmake <project_name> <source_header_files>\n\n"
@@ -64,7 +64,7 @@ $fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
 $fLinuxOS = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
 $fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
 
-if( ARGV.size == 0 )
+if( ARGV.size == 0 || ARGV[0] == '?' || ARGV[0] == '-help' )
 	showUsage
 end
 
