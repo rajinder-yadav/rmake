@@ -169,7 +169,12 @@ end
 
 if( File.exist?( "main.cpp" ) )
 	File.open( "main.cpp", "w+" ) do |f|
-		f.puts "#include <iostream>"
+		f.puts "#include <iostream>\n\n"
+
+		header_file.each do |headerFile|
+			f.puts "#include \"#{headerFile}\""
+		end
+
 		f.puts "\n"
 		f.puts "using namespace std;"
 		f.puts "\n"
