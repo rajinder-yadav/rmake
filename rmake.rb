@@ -101,6 +101,9 @@ project_name = arg_list[0]
 projectSafeCreate( project_name )
 Dir.chdir( project_name )
 
+header_file = []
+source_file = []
+
 # collect project files (header, source)
 if( arg_list.size > 1 )
 	header_file = arg_list.grep /(\w*\.h|\w*\.hpp)/
@@ -150,6 +153,18 @@ File.open( "CMakeLists.txt", "w" ) do |file|
 	file.puts( "#set(LIB_FILES )" )
 	file.puts( "#target_link_libraries(#{project_name} ${LIB_FILES})" )
 	file.puts( "#add_subdirectory(test)" )
+end
+
+if( !File.exist?( "main.cpp" ) )
+	fileSafeCreate( "main.cpp" )
+end
+
+File.open( "main.cpp", "w+" ) do |f|
+	f.puts "#include <iostream>"
+	f.puts "\n"
+	f.puts "using namespace std;"
+	f.puts "\n"
+	f.puts "int main( int argc, char* argv[] )\n{\n    return 0;\n}\n"
 end
 
 Dir.chdir( ".." )
