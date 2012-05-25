@@ -21,7 +21,17 @@ def projectSafeCreate( name )
 	Dir.mkdir( name )
 end
 
+def checkInProjectFolder
+	if( !(Dir.exist?( "build" ) && Dir.exist?( "src" ) ) )
+		puts "RMake Error!\nMust run this command from the project root folder."
+		puts "Project root folder must have a src and build sub-folder."
+		puts "See usage: rmake ?"
+		exit(0)
+	end
+end
+
 def genCMakeEclipse
+	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
 	if( $fLinuxOS )
@@ -33,6 +43,7 @@ def genCMakeEclipse
 end
 
 def genCMakeLinux
+	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
 	system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
@@ -40,6 +51,7 @@ def genCMakeLinux
 end
 
 def genCMakeVisualStudio
+	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
 	system( "cmake -G \"NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
