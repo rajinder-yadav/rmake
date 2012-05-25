@@ -10,10 +10,26 @@
 require "fileutils"
 require "shell"
 
+def doxyComment( filename )
+	doxy=<<EOS
+/**
+ * @file:   #{filename}
+ * @brief:  
+ *
+ * @author: 
+ * @date:   #{Time.now.strftime "%b %d, %Y at %I:%M %p"}
+ *
+ * <Enter long description here>
+ */
+
+EOS
+end
+
 def fileSafeCreateHeader( filename )
 	return if( File.exist?( filename ) )
 	headerGuard = filename.upcase.tr( '.', '_' )
 	File.open( filename, "w+" ) do |f|
+		f.puts doxyComment( filename )
 		f.puts "#ifndef _#{headerGuard}_"
 		f.puts "#define _#{headerGuard}_\n\n"
 		f.puts "#endif // _#{headerGuard}_"
@@ -24,6 +40,7 @@ def fileSafeCreateSource( filename )
 	return if( File.exist?( filename ) )
 	headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
 	File.open( filename, "w+" ) do |f|
+		f.puts doxyComment( filename )
 		f.puts( "#include \"#{headerFile}\"" ) if( File.exist?( headerFile ) )
 	end
 end
@@ -169,6 +186,7 @@ end
 
 if( File.exist?( "main.cpp" ) )
 	File.open( "main.cpp", "w+" ) do |f|
+		f.puts doxyComment( "main.cpp" )
 		f.puts "#include <iostream>\n\n"
 
 		header_file.each do |headerFile|
