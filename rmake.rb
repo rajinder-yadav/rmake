@@ -156,15 +156,13 @@ File.open( "CMakeLists.txt", "w" ) do |file|
 end
 
 if( !File.exist?( "main.cpp" ) )
-	fileSafeCreate( "main.cpp" )
-end
-
-File.open( "main.cpp", "w+" ) do |f|
-	f.puts "#include <iostream>"
-	f.puts "\n"
-	f.puts "using namespace std;"
-	f.puts "\n"
-	f.puts "int main( int argc, char* argv[] )\n{\n    return 0;\n}\n"
+	File.open( "main.cpp", "w+" ) do |f|
+		f.puts "#include <iostream>"
+		f.puts "\n"
+		f.puts "using namespace std;"
+		f.puts "\n"
+		f.puts "int main( int argc, char* argv[] )\n{\n    return 0;\n}\n"
+	end
 end
 
 Dir.chdir( ".." )
