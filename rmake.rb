@@ -10,9 +10,21 @@
 require "fileutils"
 require "shell"
 
-def fileSafeCreate( name )
-	return if( File.exist?( name ) )
-	File.open(name, "w+" ) do |file|
+def fileSafeCreateHeader( filename )
+	return if( File.exist?( filename ) )
+	headerGuard = filename.upcase.tr( '.', '_' )
+	File.open( filename, "w+" ) do |f|
+		f.puts "#ifndef _#{headerGuard}_"
+		f.puts "#define _#{headerGuard}_\n\n"
+		f.puts "#endif // _#{headerGuard}_"
+	end
+end
+
+def fileSafeCreateSource( filename )
+	return if( File.exist?( filename ) )
+	headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
+	File.open( filename, "w+" ) do |f|
+		f.puts( "#include \"#{headerFile}\"" ) if( File.exist?( headerFile ) )
 	end
 end
 
@@ -127,11 +139,11 @@ end
 Dir.chdir( "src" )
 
 header_file.each do |filename|
-	fileSafeCreate( filename )
+	fileSafeCreateHeader( filename )
 end
 
 source_file.each do |filename|
-	fileSafeCreate( filename )
+	fileSafeCreateSource( filename )
 end
 
 # create a generic CMakeLists.txt file
@@ -155,7 +167,7 @@ File.open( "CMakeLists.txt", "w" ) do |file|
 	file.puts( "#add_subdirectory(test)" )
 end
 
-if( !File.exist?( "main.cpp" ) )
+if( File.exist?( "main.cpp" ) )
 	File.open( "main.cpp", "w+" ) do |f|
 		f.puts "#include <iostream>"
 		f.puts "\n"
