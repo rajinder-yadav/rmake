@@ -7,6 +7,8 @@
 # CMake list file generator and project creator
 # specifically designed for making an Eclipse project
 
+RMAKE_VERSION = 1.2
+
 require "fileutils"
 require "shell"
 
@@ -55,7 +57,7 @@ def checkInProjectFolder
 		puts "RMake Error!\nMust run this command from the project root folder."
 		puts "Project root folder must have a src and build sub-folder."
 		puts "See usage: rmake ?"
-		exit(0)
+		exit( false )
 	end
 end
 
@@ -88,7 +90,7 @@ def genCMakeVisualStudio
 end
 
 def showUsage
-	puts "RMake v1.0 - CMake project file generator"
+	puts "RMake v#{RMAKE_VERSION} - CMake project file generator"
 	puts "Created by Rajinder Yadav <info@devmentor.org>"
 	puts "Copyright (c) DevMentor.org May 21, 2012\n\n"
 	puts "Use: rmake <project_name> <source_header_files>\n\n"
@@ -96,7 +98,7 @@ def showUsage
 	puts "rmake g:eclipse - Eclipse CDT project"
 	puts "rmake g:name    - Linux GNU makefile"
 	puts "rmake g:nmake   - VC++ NMake makefile"
-	exit(0)
+	exit( false )
 end
 
 
@@ -113,19 +115,24 @@ end
 case( ARGV[0] )
 when "g:eclipse"
 	genCMakeEclipse
-	exit(0)
+	exit( false )
 when "g:make"
 	genCMakeLinux
-	exit(0)
+	exit( false )
 when "g:nmake"
 	genCMakeVisualStudio
-	exit(0)
+	exit( false )
 end
 
 # create projects folder layout 
 arg_list = ARGV
 
 project_name = arg_list[0]
+if( project_name =~ /\.(c|cpp|h|hpp)/ )
+	puts "RMake Error!\nProject name must be supplied as the first argument."
+	puts "See usage: rmake ?"
+	exit( false )
+end
 
 projectSafeCreate( project_name )
 Dir.chdir( project_name )
