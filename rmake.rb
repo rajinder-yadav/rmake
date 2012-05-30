@@ -7,7 +7,7 @@
 # CMake list file generator and project creator
 # specifically designed for making an Eclipse project
 
-RMAKE_VERSION = 1.2
+RMAKE_VERSION = 1.3
 
 require "fileutils"
 require "shell"
@@ -101,10 +101,9 @@ def showUsage
 	puts "rmake g:eclipse - Eclipse CDT project"
 	puts "rmake g:name    - Linux GNU makefile"
 	puts "rmake g:nmake   - VC++ NMake makefile"
-	puts "\nThe default build type is Debug"
-	puts "Option build type flags are:"
-	puts "g:debug for Debug build"
-	puts "g:release for Release build"
+	puts "\nThe default build type is debug. Optional build type flags are:"
+	puts "\n  g:debug for Debug build"
+	puts "  g:release for Release build"
 	exit( false )
 end
 
