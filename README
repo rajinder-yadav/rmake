@@ -3,21 +3,20 @@ RMAKE - The Ruby CMake project generator
 Author: Rajinder Yadav <info@devmentor.org>
 Date: May 21, 2012
 
-Description: The rmake script helps in creating a project folder with
-empty source and header files as well as a build folder with an
+Description: The RMake script creates a project folder with
+declared source and header files as well as a build folder with an
 Eclipse project ready to use.
 
-To use the rmake script for anywhere add the following to your
-~/.bachrc file.
+To use the rmake script from anywhere, add the following alias to your ~/.bachrc file.
 
-alias rmake='~/dev/cpp/scripts/rmake.rb'
+alias rmake='~/dev/cpp/rmake/rmake.rb'
 
-NOTE: make sure to path points to where to have saved rmake.rb
+NOTE: make sure to path points to where to have saved rmake.rb, above it's assume it in the user home subfolder of ~/dev/cpp/rmake
 
 
 Importing the Eclipse project (Linux)
 =====================================
-Launch Eclipse and from the file menu select:
+Launch Eclipse, then from the file menu select:
 
 File -> New -> "Make project with existing code"
 
