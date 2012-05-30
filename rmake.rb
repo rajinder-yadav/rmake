@@ -166,6 +166,9 @@ header_file.each do |filename|
 	fileSafeCreateHeader( filename )
 end
 
+# if no source file specified, assume a main.cpp blank project
+source_file << "main.cpp" if source_file.empty?
+
 source_file.each do |filename|
 	fileSafeCreateSource( filename )
 end
