@@ -61,31 +61,34 @@ def checkInProjectFolder
 	end
 end
 
-def genCMakeEclipse
+def genCMakeEclipse( build_type )
 	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
+
 	if( $fLinuxOS )
-	   system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+		system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
    else
-	   system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+		system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
    end
 	Dir.chdir( ".." )
 end
 
-def genCMakeLinux
+def genCMakeLinux( build_type )
 	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
-	system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+
+	system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
 	Dir.chdir( ".." )
 end
 
-def genCMakeVisualStudio
+def genCMakeVisualStudio( build_type )
 	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
-	system( "cmake -G \"NMake Makefiles\" -D CMAKE_BUILD_TYPE=Debug ../src" )
+
+	system( "cmake -G \"NMake Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
 	Dir.chdir( ".." )
 end
 
@@ -98,11 +101,16 @@ def showUsage
 	puts "rmake g:eclipse - Eclipse CDT project"
 	puts "rmake g:name    - Linux GNU makefile"
 	puts "rmake g:nmake   - VC++ NMake makefile"
+	puts "\nThe default build type is Debug"
+	puts "Option build type flags are:"
+	puts "g:debug for Debug build"
+	puts "g:release for Release build"
 	exit( false )
 end
 
 
 # === MAIN START ===
+
 $fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
 $fLinuxOS = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
 $fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
@@ -111,21 +119,33 @@ if( ARGV.size == 0 || ARGV[0] == '?' || ARGV[0] == '-help' )
 	showUsage
 end
 
-# just regenerate CMake make file and exit
-case( ARGV[0] )
-when "g:eclipse"
-	genCMakeEclipse
-	exit( false )
-when "g:make"
-	genCMakeLinux
-	exit( false )
-when "g:nmake"
-	genCMakeVisualStudio
-	exit( false )
-end
-
 # create projects folder layout 
 arg_list = ARGV
+
+# Determine the project build type, Debug (default) or Release
+build_type = "Debug"
+build_type_index = arg_list.find_index( "g:debug" )
+
+if( build_type_index.nil? )
+	build_type_index = arg_list.find_index( "g:release" )
+	build_type = "Release" if( !build_type_index.nil? )
+end
+
+arg_list.delete_at( build_type_index ) if( !build_type_index.nil? )
+
+# if g:eclipse, g:make, g:nmake is passed 
+# re-generate project makefile and exit
+case( arg_list[0] )
+when "g:eclipse"
+	genCMakeEclipse( build_type )
+	exit( false )
+when "g:make"
+	genCMakeLinux( build_type )
+	exit( false )
+when "g:nmake"
+	genCMakeVisualStudio( build_type )
+	exit( false )
+end
 
 project_name = arg_list[0]
 if( project_name =~ /\.(c|cpp|h|hpp)/ )
@@ -213,7 +233,7 @@ end
 Dir.chdir( ".." )
 
 # generate Eclipse project
-genCMakeEclipse
+genCMakeEclipse( build_type )
 
 Dir.chdir( ".." )
 
