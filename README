@@ -80,7 +80,10 @@ We now need to excluse the build folder from the build process.
 
 You should be able to build and run your project.
 
--- Rajinder Yadav
+--
+Rajinder Yadav <info@devmentor.org>
+
+http://git.devmentor.org/rmake
 
 Thank you for using RMake, your support is very appreciated!
 Happy Hacking =)
