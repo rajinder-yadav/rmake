@@ -7,13 +7,14 @@
 # CMake list file generator and project creator
 # specifically designed for making an Eclipse project
 
-RMAKE_VERSION = 1.3
+RMAKE_VERSION = 1.4
 
 require "fileutils"
 require "shell"
 
 def doxyComment( filename )
-	doxy=<<EOS
+
+doxy=<<EOS
 /**
  * @file:   #{filename}
  * @brief:  
@@ -25,10 +26,12 @@ def doxyComment( filename )
  */
 
 EOS
+
 end
 
 def fileSafeCreateHeader( filename )
 	return if( File.exist?( filename ) )
+	puts "RMake> Creating header file: " + filename
 	headerGuard = filename.upcase.tr( '.', '_' )
 	File.open( filename, "w+" ) do |f|
 		f.puts doxyComment( filename )
@@ -40,6 +43,7 @@ end
 
 def fileSafeCreateSource( filename )
 	return if( File.exist?( filename ) )
+	puts "RMake> Creating source file " + filename
 	headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
 	File.open( filename, "w+" ) do |f|
 		f.puts doxyComment( filename )
@@ -67,14 +71,17 @@ def genCMakeEclipse( build_type )
 	FileUtils.rm_rf( "./")
 
 	if( $fLinuxOS )
+		puts "RMake> Creating #{build_type} Linux Eclipse project makefile "
 		system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
    else
+		puts "RMake> Creating #{build_type} Visual C++ NMake makefile "
 		system( "cmake -G \"Eclipse CDT4 - NMake Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
    end
 	Dir.chdir( ".." )
 end
 
 def genCMakeLinux( build_type )
+	puts "RMake> Creating #{build_type} Linux GNU Make makefile "
 	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
@@ -84,6 +91,7 @@ def genCMakeLinux( build_type )
 end
 
 def genCMakeVisualStudio( build_type )
+	puts "RMake> Creating #{build_type} VisualStudio project solution "
 	checkInProjectFolder
 	Dir.chdir( "build" )
 	FileUtils.rm_rf( "./")
@@ -130,6 +138,8 @@ if( build_type_index.nil? )
 	build_type = "Release" if( !build_type_index.nil? )
 end
 
+puts "RMake> Build type #{build_type}"
+
 arg_list.delete_at( build_type_index ) if( !build_type_index.nil? )
 
 # if g:eclipse, g:make, g:nmake is passed 
@@ -148,11 +158,12 @@ end
 
 project_name = arg_list[0]
 if( project_name =~ /\.(c|cpp|h|hpp)/ )
-	puts "RMake Error!\nProject name must be supplied as the first argument."
+	puts "RMake> Error!\nProject name must be supplied as the first argument."
 	puts "See usage: rmake ?"
 	exit( false )
 end
 
+puts "RMake> Project name #{project_name}"
 projectSafeCreate( project_name )
 Dir.chdir( project_name )
 
@@ -167,13 +178,16 @@ end
 
 # create project build, src folders
 if( !Dir.exist? "build" )
+	puts "RMake> Creating build sub-folder"
 	Dir.mkdir( "build" )
 end
 
 if( !Dir.exist? "src" )
+	puts "RMake> Creating project src folder"
 	Dir.mkdir( "src" )
 	Dir.chdir( "src" )
 	Dir.mkdir( "test" )
+	puts "RMake> Creating test sub-folder"
 	Dir.chdir( ".." )
 end
 
@@ -193,6 +207,7 @@ source_file.each do |filename|
 end
 
 # create a generic CMakeLists.txt file
+puts "RMake> Creating project CMakeLists.txt file"
 File.open( "CMakeLists.txt", "w" ) do |file|
 	file.puts( "cmake_minimum_required(VERSION 2.6)" )
 	file.puts( "project(#{project_name})" )
