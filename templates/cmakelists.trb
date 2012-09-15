@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6)
+project(<%= project_name %>)
+
+set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.49.0/include/" )
+set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.49.0/lib/" )
+
+include_directories("${PROJECT_SOURCE_DIR}" "${BOOST_INCLUDE}")
+#link_directories("${BOOST_LIB}")
+
+set(SOURCE_FILES <%= source_file.join(' ') %>)
+set(HEADER_FILES <%= header_file.join(' ') %>)
+
+add_executable(<%= project_name %> ${SOURCE_FILES} ${HEADER_FILES})
+
+#set(LIB_FILES )
+#target_link_libraries(<%= project_name %> ${LIB_FILES})
+#add_subdirectory(test)

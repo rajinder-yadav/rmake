@@ -1,0 +1,10 @@
+/**
+ * @file:   <%= filename %>
+ * @brief:
+ *
+ * @author:
+ * @date:   <%= Time.now.strftime "%b %d, %Y at %I:%M %p" %>
+ *
+ * <Enter long description here>
+ */
+

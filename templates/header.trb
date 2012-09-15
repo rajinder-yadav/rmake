@@ -1,0 +1,6 @@
+#ifndef _<%=headerGuard%>_
+#define _<%=headerGuard%>_
+
+// TODO: Add your code here
+
+#endif // _<%=headerGuard%>_
