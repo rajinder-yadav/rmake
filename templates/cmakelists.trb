@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(<%= project_name %>)
 
-set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.49.0/include/" )
-set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.49.0/lib/" )
+set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.53.0/include/" )
+set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.53.0/lib/" )
 
 include_directories("${PROJECT_SOURCE_DIR}" "${BOOST_INCLUDE}")
 #link_directories("${BOOST_LIB}")
