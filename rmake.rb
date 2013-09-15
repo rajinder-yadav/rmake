@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/env ruby
 #
 # Author: Rajinder Yadav <info@devmentor.org>
 # Date: May 21, 2012
