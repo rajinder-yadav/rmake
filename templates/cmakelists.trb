@@ -12,6 +12,8 @@ set( HEADER_FILES <%= header_file.join(' ') %> )
 
 add_executable( <%= project_name %> ${SOURCE_FILES} ${HEADER_FILES} )
 
+#find_package( Threads )
 #set( LIB_FILES boost_system boost_thread boost_regex )
-#target_link_libraries( <%= project_name %> ${LIB_FILES} )
+#target_link_libraries( <%= project_name %> ${LIB_FILES} ${CMAKE_THREAD_LIBS_INIT} )
+
 #add_subdirectory( test )
