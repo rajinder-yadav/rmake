@@ -2,8 +2,8 @@ cmake_minimum_required( VERSION 2.6 )
 project( <%= project_name %> )
 
 # Define boost path explicitly
-#set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.53.0/include/" )
-#set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.53.0/lib/" )
+#set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.58/include/" )
+#set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.58/lib/" )
 
 # Define boost path using environment var
 set( BOOST_INCLUDE "$ENV{BOOST_ROOT}/include/" )
@@ -21,7 +21,7 @@ add_executable( <%= project_name %> ${SOURCE_FILES} ${HEADER_FILES} )
 #add_definitions( "-std=c++11" )
 
 #find_package( Threads )
-#set( LIB_FILES boost_system pthread boost_thread boost_regex boost_date_time boost_serialization )
+#set( LIB_FILES pthread boost_system boost_thread boost_regex boost_date_time boost_serialization )
 #target_link_libraries( <%= project_name %> ${LIB_FILES} ${CMAKE_THREAD_LIBS_INIT} )
 
 #add_subdirectory( test )
