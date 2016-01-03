@@ -16,26 +16,26 @@ require "erb"
 # Create header file if it does not exist
 #
 # Template variables:
-#   filename    - name of file being written 
+#   filename    - name of file being written
 #   headerGuard - name used for header guard
 #
 def fileSafeCreateHeader( filename )
-    
-  return if( File.exist?( filename ) )  
-  puts "RMake> Creating header file: " + filename  
+
+  return if( File.exist?( filename ) )
+  puts "RMake> Creating header file: " + filename
   headerGuard = filename.upcase.tr( '.', '_' )
   rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
 
   title_lines  = IO.readlines( "#{rmake_loc}/templates/title.trb" )
   header_lines = IO.readlines( "#{rmake_loc}/templates/header.trb" )
 
-  File.open( filename, "w+" ) do |f|    
+  File.open( filename, "w+" ) do |f|
     expanded_line = ERB.new( title_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
     expanded_line = ERB.new( header_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
   end
-    
+
 end
 
 # Create source file
@@ -49,12 +49,12 @@ def fileSafeCreateSource( filename )
   return if( File.exist?( filename ) )
   puts "RMake> Creating source file " + filename
   rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
-  
+
   title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
   source_lines = IO.readlines( "#{rmake_loc}/templates/source.trb" )
-  
+
   headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
-  
+
   File.open( filename, "w+" ) do |f|
     expanded_line = ERB.new( title_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
@@ -62,7 +62,7 @@ def fileSafeCreateSource( filename )
       expanded_line = ERB.new( source_lines.join , nil, "%<>" )
       f.puts expanded_line.result( binding )
     end
-  end  
+  end
 end
 
 # Create project folder if it does not exist
@@ -75,6 +75,8 @@ end
 # a proper project folder will have a 'build' and 'src' sub-folder
 def checkInProjectFolder
   if( !(Dir.exist?( "build" ) && Dir.exist?( "src" ) ) )
+    Dir.mkdir( "build" )
+  else
     puts "RMake Error!\nMust run this command from the project root folder."
     puts "Project root folder must have a src and build sub-folder."
     puts "See usage: rmake ?"
@@ -120,7 +122,7 @@ def genCMakeVisualStudio( build_type )
   Dir.chdir( ".." )
 end
 
-# Display rmake usage in the console 
+# Display rmake usage in the console
 def showUsage
   puts "RMake v#{RMAKE_VERSION} - CMake project file generator"
   puts "Created by Rajinder Yadav <info@devmentor.org>"
@@ -241,8 +243,8 @@ if( File.exist?( "main.cpp" ) )
   title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
   main_lines = IO.readlines( "#{rmake_loc}/templates/main.trb" )
   filename = "main.cpp"
-  
-  File.open( filename, "w+" ) do |f|        
+
+  File.open( filename, "w+" ) do |f|
       expanded_line = ERB.new( title_lines.join , nil, "%<>" )
       f.puts expanded_line.result( binding )
       expanded_line = ERB.new( main_lines.join, nil, "%<>" )
