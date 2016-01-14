@@ -74,8 +74,10 @@ end
 # Check if executing rmake from project's root folder
 # a proper project folder will have a 'build' and 'src' sub-folder
 def checkInProjectFolder
-  if( !(Dir.exist?( "build" ) && Dir.exist?( "src" ) ) )
-    Dir.mkdir( "build" )
+  if( Dir.exist?( "src" ) )
+     if( ! Dir.exist?( "build" ) )
+        Dir.mkdir( "build" )
+     end
   else
     puts "RMake Error!\nMust run this command from the project root folder."
     puts "Project root folder must have a src and build sub-folder."
