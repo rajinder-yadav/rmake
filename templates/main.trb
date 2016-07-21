@@ -1,10 +1,32 @@
 #include <iostream>
+
+
+//#include <array>
+//#include <deque>
+//#include <list>
+//#include <map>
+//#include <string>
+//#include <queue>
+//#include <vector>
+
+//#include <fstream>
+//#include <sstream>
+
+//#include <memory>
+//#include <algorithm>
+
+//#include <regex>
+//#include <thread>
+
 <% header_file.each do |headerFile| %>
 <%= "#include \"#{headerFile}\"" %>
 
 <% end %>
 
+//using namespace std;
+
 using std::clog;
+using std::cout;
 using std::endl;
 
 int main( int argc, char* argv[] )
@@ -12,3 +34,4 @@ int main( int argc, char* argv[] )
    clog << "Hello World!" << endl;
    return 0;
 }
+
