@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 #
 # Author: Rajinder Yadav <info@devmentor.org>
-# Date: May 21, 2012
-# Web : labs.devmentor.org
+# Date:  May 21, 2012
+# Web :  labs.devmentor.org
 
 # CMake list file generator and project creator
 # specifically designed for making an Eclipse project
 
-RMAKE_VERSION = "1.5.0"
+RMAKE_VERSION = "1.6.0"
 
 require "fileutils"
 require "shell"
@@ -68,11 +68,25 @@ end
 # Create project folder if it does not exist
 def projectSafeCreate( name )
   return if( File.exist?( name ) )
+  puts "RMake> Creating project folder #{name}"
   Dir.mkdir( name )
+  Dir.chdir( name )
+  FileUtils.touch( "CHANGE-LOG.md" )
+  FileUtils.touch( "Copyright.txt" )
+  FileUtils.touch( "LICENSE.txt" )
+  FileUtils.touch( "README.md" )
+  folders = ["docs", "include", "lib",]
+  folders.each do |folder|
+    if( ! Dir.exist?( folder ) )
+      puts "RMake> Creating sub-folder #{name}/#{folder}"
+      Dir.mkdir( folder )
+    end
+  end
+  Dir.chdir( ".." )
 end
 
 # Check if executing rmake from project's root folder
-# a proper project folder will have a 'build' and 'src' sub-folder
+# A proper project folder will have a 'build' and 'src' sub-folder
 def checkInProjectFolder
   if( Dir.exist?( "src" ) )
      if( ! Dir.exist?( "build" ) )
@@ -150,7 +164,7 @@ if( ARGV.size == 0 || ARGV[0] == '?' || ARGV[0] == '-help' )
   showUsage
 end
 
-# create projects folder layout
+# Create projects folder layout
 arg_list = ARGV
 
 # Determine the project build type, Debug (default) or Release
@@ -162,12 +176,12 @@ if( build_type_index.nil? )
   build_type = "Release" if( !build_type_index.nil? )
 end
 
-puts "RMake> Build type #{build_type}"
+puts "RMake> #{build_type} Build"
 
 arg_list.delete_at( build_type_index ) if( !build_type_index.nil? )
 
-# if g:eclipse, g:make, g:nmake is passed
-# re-generate project makefile and exit
+# If g:eclipse, g:make, g:nmake is passed
+# Re-generate project makefile and exit
 case( arg_list[0] )
 when "g:eclipse"
   genCMakeEclipse( build_type )
@@ -187,49 +201,51 @@ if( project_name =~ /\.(c|cpp|h|hpp)/ )
   exit( false )
 end
 
-puts "RMake> Project name #{project_name}"
+puts "RMake> Creating Project #{project_name}"
 projectSafeCreate( project_name )
 Dir.chdir( project_name )
 
 header_file = []
 source_file = []
 
-# collect project files (header, source)
+# Collect project files (header, source)
 if( arg_list.size > 1 )
   header_file = arg_list.grep /(\w*\.h|\w*\.hpp)/
   source_file = arg_list.grep /(\w*\.c|\w*\.cpp)/
 end
 
-# create project build, src folders
+# Create project sub-folders: build, include, src, test
 if( !Dir.exist? "build" )
-  puts "RMake> Creating build sub-folder"
+  puts "RMake> Creating sub-folder #{project_name}/build"
   Dir.mkdir( "build" )
 end
 
 if( !Dir.exist? "src" )
-  puts "RMake> Creating project src folder"
+  puts "RMake> Creating sub-folder #{project_name}/src" 
   Dir.mkdir( "src" )
   Dir.chdir( "src" )
+  Dir.mkdir( "include" )
+  puts "RMake> Creating sub-folder #{project_name}/src/include"
   Dir.mkdir( "test" )
-  puts "RMake> Creating test sub-folder"
+  puts "RMake> Creating sub-folder #{project_name}/src/test"
   Dir.chdir( ".." )
 end
 
-# create blank source, header files
+# Create blank source, header files
 Dir.chdir( "src" )
 
 header_file.each do |filename|
   fileSafeCreateHeader( filename )
 end
 
-# if no source file specified, assume a main.cpp blank project
+# If no source file specified, assume a main.cpp blank project
 source_file << "main.cpp" if source_file.empty?
 
 source_file.each do |filename|
   fileSafeCreateSource( filename )
 end
 
-# create a generic CMakeLists.txt file
+# Create a generic CMakeLists.txt file
 puts "RMake> Creating project CMakeLists.txt file"
 rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
 cmake_lines  = IO.readlines( "#{rmake_loc}/templates/cmakelists.trb" )
@@ -256,7 +272,7 @@ end
 
 Dir.chdir( ".." )
 
-# generate Eclipse project
+# Generate Eclipse project
 genCMakeEclipse( build_type )
 
 Dir.chdir( ".." )
