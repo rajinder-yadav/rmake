@@ -1,13 +1,14 @@
 #!/usr/bin/env ruby
 #
-# Author: Rajinder Yadav <info@devmentor.org>
-# Date:  May 21, 2012
-# Web :  labs.devmentor.org
+# Project: Rapid Make
+# Author:  Rajinder Yadav <info@devmentor.org>
+# Date:    May 21, 2012
+# Web :    labs.devmentor.org
 
-# CMake list file generator and project creator
-# specifically designed for making an Eclipse project
+# A utility to create CMake based project with
+# support for testing using Micro Test.
 
-RMAKE_VERSION = "1.6.0"
+RMAKE_VERSION = "1.6.5"
 
 require "open-uri"
 require "fileutils"
