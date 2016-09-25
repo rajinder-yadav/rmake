@@ -9,6 +9,7 @@
 
 RMAKE_VERSION = "1.6.0"
 
+require "open-uri"
 require "fileutils"
 require "shell"
 require "erb"
@@ -195,6 +196,8 @@ when "g:nmake"
 end
 
 project_name = arg_list[0]
+test_project_name = "test.#{project_name}"
+
 if( project_name =~ /\.(c|cpp|h|hpp)/ )
   puts "RMake> Error!\nProject name must be supplied as the first argument."
   puts "See usage: rmake ?"
@@ -228,6 +231,10 @@ if( !Dir.exist? "src" )
   puts "RMake> Creating sub-folder #{project_name}/src/include"
   Dir.mkdir( "test" )
   puts "RMake> Creating sub-folder #{project_name}/src/test"
+  Dir.chdir( "include" )
+  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp" )
+  IO.copy_stream( micro_test, "./micro-test.hpp" )
+  Dir.chdir( ".." )
   Dir.chdir( ".." )
 end
 
@@ -240,10 +247,45 @@ end
 
 # If no source file specified, assume a main.cpp blank project
 source_file << "main.cpp" if source_file.empty?
+source_file_cache = source_file
 
 source_file.each do |filename|
   fileSafeCreateSource( filename )
 end
+
+# Create blank Test source file.
+source_file = ["test.main.cpp"]
+Dir.chdir( "test" )
+fileSafeCreateSource( "test.main.cpp" )
+
+# Create a Test CMakeLists.txt file
+puts "RMake> Creating Test project CMakeLists.txt file"
+rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
+cmake_lines  = IO.readlines( "#{rmake_loc}/templates/cmakelists.test.trb" )
+
+File.open( "CMakeLists.txt", "w" ) do |file|
+  expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
+  file.puts expanded_line.result( binding )
+end
+
+# Create Test source file.
+if( File.exist?( "test.main.cpp" ) )
+  rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
+
+  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
+  main_lines = IO.readlines( "#{rmake_loc}/templates/test.main.trb" )
+  filename = "test.main.cpp"
+
+  File.open( filename, "w+" ) do |f|
+      expanded_line = ERB.new( title_lines.join , nil, "%<>" )
+      f.puts expanded_line.result( binding )
+      expanded_line = ERB.new( main_lines.join, nil, "%<>" )
+      f.puts expanded_line.result( binding )
+  end
+end
+source_file = source_file_cache
+Dir.chdir( ".." )
+
 
 # Create a generic CMakeLists.txt file
 puts "RMake> Creating project CMakeLists.txt file"
