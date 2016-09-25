@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 //#include <array>
 //#include <deque>
 //#include <list>
@@ -26,6 +25,7 @@
 //using namespace std;
 
 using std::clog;
+using std::cerr;
 using std::cout;
 using std::endl;
 
