@@ -20,42 +20,48 @@ To use the **rmake** Ruby script
 
 Let's go through the steps of creating a simple "hello" project using rmake.
 
-1. Project "hello" Creation, project is created under folder 'hello'.
+### Project "hello" Creation. 
 
-    ```bash
-    cd /tmp
+The project is created under folder 'hello'.
 
-    rmake hello
-    ```
+```bash
+cd /tmp
+rmake hello
+```
 
-1. Building project, Makefile is located under sub-folder build.
+### Building Project
 
-    ```bash
-    cd hello/build
+Makefile is located under sub-folder build.
 
-    make
-    ```
+```bash
+cd hello/build
+make
+```
 
-1. Running hello program.
+### Running hello program.
 
-    ```bash
-    ./hello
-    ```
+The executable can be found under the build folder.
 
-1. Running test program. Initially one failing test is created for you to follow.
+```bash
+./hello
+```
 
-    ```bash
-    ./test/test.hello
-    ```
+### Running the Test Program.
+
+The test program is found under build/test/ sub-folder. Initially one failing test is created for you to follow.
+
+```bash
+./test/test.hello
+```
 
 ## Watch Video
 
 [![Video](./vid.png)](https://www.youtube.com/watch?v=OQskZ0Z5uqA)
 
 ## Micro Test - Testing Your Project
-RMake creates a test sub-folder and use the latest Micro Test header file, it basically pull it from the Micro Test Git repository.
+RMake creates a test sub-folder under src/ and uses the latest Micro Test header file, it basically pulls it from the Micro Test Git repository.
 
-To learn more about how to write tests using [Micro Test check out the project site](https://bitbucket.org/rajinder_yadav/micro_test).
+To learn more about how to write tests using [Micro Test](https://bitbucket.org/rajinder_yadav/micro_test) check out the project site. You will be amazed how simple and fast it is to write test code.
 
 ---
 ## Importing Eclipse Project (Linux)
