@@ -21,23 +21,22 @@ require "erb"
 #   filename    - name of file being written
 #   headerGuard - name used for header guard
 #
-def fileSafeCreateHeader( filename )
-
+def safeCreateHeaderFile( filename )
   return if( File.exist?( filename ) )
   puts "RMake> Creating header file: " + filename
-  headerGuard = filename.upcase.tr( '.', '_' )
-  rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
+  headerGuard  = filename.upcase.tr( '.', '_' )
+  rmake_loc    = File.expand_path( File.dirname( __FILE__ ) )
+  template_loc = "#{rmake_loc}/templates"
 
-  title_lines  = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  header_lines = IO.readlines( "#{rmake_loc}/templates/header.trb" )
+  header_lines = IO.readlines( "#{template_loc}/title.trb" )
+  body_lines   = IO.readlines( "#{template_loc}/header.trb" )
 
   File.open( filename, "w+" ) do |f|
-    expanded_line = ERB.new( title_lines.join , nil, "%<>" )
-    f.puts expanded_line.result( binding )
     expanded_line = ERB.new( header_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
+    expanded_line = ERB.new( body_lines.join , nil, "%<>" )
+    f.puts expanded_line.result( binding )
   end
-
 end
 
 # Create source file
@@ -47,23 +46,27 @@ end
 #   filename    - name of file being written
 #   headerFile  - header file of source file
 #
-def fileSafeCreateSource( filename )
+def safeCreateSourceFile( filename, header_file )
   return if( File.exist?( filename ) )
   puts "RMake> Creating source file " + filename
   rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
+  template_loc = "#{rmake_loc}/templates"
+  header = "title"
+  body = case filename
+    when "main.cpp" then "main"
+    when "test.main.cpp" then "test.main"
+    else "source"
+  end
 
-  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  source_lines = IO.readlines( "#{rmake_loc}/templates/source.trb" )
-
+  header_lines = IO.readlines( "#{template_loc}/#{header}.trb" )
+  body_lines   = IO.readlines( "#{template_loc}/#{body}.trb" )
   headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
 
   File.open( filename, "w+" ) do |f|
-    expanded_line = ERB.new( title_lines.join , nil, "%<>" )
+    expanded_line = ERB.new( header_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
-    if( File.exist?( headerFile ) )
-      expanded_line = ERB.new( source_lines.join , nil, "%<>" )
+      expanded_line = ERB.new( body_lines.join , nil, "%<>" )
       f.puts expanded_line.result( binding )
-    end
   end
 end
 
@@ -235,88 +238,53 @@ if( !Dir.exist? "src" )
   Dir.chdir( "include" )
   micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp" )
   IO.copy_stream( micro_test, "./micro-test.hpp" )
-  Dir.chdir( ".." )
-  Dir.chdir( ".." )
+  Dir.chdir( "../.." )
 end
 
 # Create blank source, header files
 Dir.chdir( "src" )
 
 header_file.each do |filename|
-  fileSafeCreateHeader( filename )
+  safeCreateHeaderFile( filename )
 end
 
 # If no source file specified, assume a main.cpp blank project
 source_file << "main.cpp" if source_file.empty?
-source_file_cache = source_file
-
 source_file.each do |filename|
-  fileSafeCreateSource( filename )
+  safeCreateSourceFile( filename, header_file )
 end
 
-# Create blank Test source file.
-source_file = ["test.main.cpp"]
+# Create project CMakeLists.txt file
+puts "RMake> Creating project CMakeLists.txt file"
+rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
+cmake_lines = IO.readlines( "#{rmake_loc}/templates/cmakelists.trb" )
+
+File.open( "CMakeLists.txt", "w" ) do |file|
+  expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
+  file.puts expanded_line.result( binding )
+end
+
+# Create test.main.cpp source file.
 Dir.chdir( "test" )
-fileSafeCreateSource( "test.main.cpp" )
+source_file_cache = source_file
+source_file = ["test.main.cpp"]
+safeCreateSourceFile( "test.main.cpp", header_file )
 
 # Create a Test CMakeLists.txt file
 puts "RMake> Creating Test project CMakeLists.txt file"
 rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
-cmake_lines  = IO.readlines( "#{rmake_loc}/templates/cmakelists.test.trb" )
+cmake_lines = IO.readlines( "#{rmake_loc}/templates/cmakelists.test.trb" )
 
 File.open( "CMakeLists.txt", "w" ) do |file|
   expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
   file.puts expanded_line.result( binding )
 end
 
-# Create Test source file.
-if( File.exist?( "test.main.cpp" ) )
-  rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
-
-  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  main_lines = IO.readlines( "#{rmake_loc}/templates/test.main.trb" )
-  filename = "test.main.cpp"
-
-  File.open( filename, "w+" ) do |f|
-      expanded_line = ERB.new( title_lines.join , nil, "%<>" )
-      f.puts expanded_line.result( binding )
-      expanded_line = ERB.new( main_lines.join, nil, "%<>" )
-      f.puts expanded_line.result( binding )
-  end
-end
 source_file = source_file_cache
-Dir.chdir( ".." )
+Dir.chdir( "../.." )
 
-
-# Create a generic CMakeLists.txt file
-puts "RMake> Creating project CMakeLists.txt file"
-rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
-cmake_lines  = IO.readlines( "#{rmake_loc}/templates/cmakelists.trb" )
-
-File.open( "CMakeLists.txt", "w" ) do |file|
-  expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
-  file.puts expanded_line.result( binding )
-end
-
-if( File.exist?( "main.cpp" ) )
-  rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
-
-  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  main_lines = IO.readlines( "#{rmake_loc}/templates/main.trb" )
-  filename = "main.cpp"
-
-  File.open( filename, "w+" ) do |f|
-      expanded_line = ERB.new( title_lines.join , nil, "%<>" )
-      f.puts expanded_line.result( binding )
-      expanded_line = ERB.new( main_lines.join, nil, "%<>" )
-      f.puts expanded_line.result( binding )
-  end
-end
-
-Dir.chdir( ".." )
-
-# Generate Eclipse project
-genCMakeEclipse( build_type )
+# Generate Makefile project
+genCMakeLinux( build_type )
 
 Dir.chdir( ".." )
 
