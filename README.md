@@ -44,10 +44,11 @@ Let's go through the steps of creating a simple "hello" project.
     ./test/test.hello
     ```
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/pcHCPYbXdvM" frameborder="0" allowfullscreen></iframe>
+## Watch Video
 
-If embedded video fails to play, [watch video here](https://youtu.be/pcHCPYbXdvM).
+[![Video](./vid.png)](https://youtu.be/pcHCPYbXdvM)
 
+---
 ## Importing Eclipse Project (Linux)
 
 Launch Eclipse, then from the file menu select:
