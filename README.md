@@ -12,7 +12,7 @@ To use the **rmake** Ruby script
     alias rmake='~/dev/rmake/rmake.rb'
     ```
 
-    **Note**: I have rmake install under my User path: ~/dev/cpp/
+    **Note**: I have rmake installed under my User path: ~/dev/rmake/
 
 1. On Windows you will need to edit the **PATH** environment variable and add the folder path to where rmake.rb is located.
 
@@ -22,27 +22,29 @@ Let's go through the steps of creating a simple "hello" project using rmake.
 
 1. Project "hello" Creation, project is created under folder 'hello'.
 
-    ```
+    ```bash
     cd /tmp
+
     rmake hello
     ```
 
 1. Building project, Makefile is located under sub-folder build.
 
-    ```
+    ```bash
     cd hello/build
+
     make
     ```
 
 1. Running hello program.
 
-    ```
+    ```bash
     ./hello
     ```
 
 1. Running test program. Initially one failing test is created for you to follow.
 
-    ```
+    ```bash
     ./test/test.hello
     ```
 
