@@ -10,6 +10,7 @@
 
 RMAKE_VERSION = "1.6.5"
 
+require "openssl"
 require "open-uri"
 require "fileutils"
 require "shell"
@@ -245,7 +246,12 @@ if( !Dir.exist? "src" )
   Dir.mkdir( "test" )
   puts "RMake> Creating sub-folder #{project_name}/src/test"
   Dir.chdir( "include" )
-  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp" )
+  # Fix for Windows SSL CERT Error!
+  if( ENV["OS"] =~ /windows/i || ENV["PATH"] =~ /windows/i )
+	  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE} )
+  else
+	  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp" )
+  end
   IO.copy_stream( micro_test, "./micro-test.hpp" )
   Dir.chdir( "../.." )
 end
