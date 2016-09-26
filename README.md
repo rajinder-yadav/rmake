@@ -143,10 +143,11 @@ You should be able to build and run your project.
 ---
 ## Contact
 
-Rajinder Yadav <info@devmentor.org>
+**Rajinder Yadav**
 
-Lab DevMentor.org Corp.
+**Labs DevMentor.org Corp.**
 
-Web: http://labs.devmentor.org
-Email: info@devmentor.org
+**Web:** http://labs.devmentor.org
+
+**Email:** info@devmentor.org
 
