@@ -137,10 +137,16 @@ We now need to excluse the build folder from the build process.
 
 You should be able to build and run your project.
 
+### Thank You for using RMake, your support is very appreciated!
+
+### Happy Hacking =)
 ---
+## Contact
+
 Rajinder Yadav <info@devmentor.org>
 
 Lab DevMentor.org Corp.
 
-### Thank you for using RMake, your support is very appreciated!
-### Happy Hacking =)
+Web: http://labs.devmentor.org
+Email: info@devmentor.org
+
