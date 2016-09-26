@@ -8,7 +8,7 @@
 # A utility to create CMake based project with
 # support for testing using Micro Test.
 
-RMAKE_VERSION = "1.6.5"
+RMAKE_VERSION = "1.6.7"
 
 require "openssl"
 require "open-uri"
