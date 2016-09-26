@@ -1,25 +1,26 @@
 #include <iostream>
 
-//#include <array>
-//#include <deque>
-//#include <list>
-//#include <map>
-//#include <string>
-//#include <queue>
-//#include <vector>
+/** Header files you may require.
+#include <array>
+#include <deque>
+#include <list>
+#include <map>
+#include <queue>
+#include <string>
+#include <vector>
 
-//#include <fstream>
-//#include <sstream>
+#include <fstream>
+#include <sstream>
 
-//#include <memory>
-//#include <algorithm>
+#include <memory>
+#include <algorithm>
 
-//#include <regex>
-//#include <thread>
+#include <regex>
+#include <thread>
+*/
 
 <% header_file.each do |headerFile| %>
 <%= "#include \"#{headerFile}\"" %>
-
 <% end %>
 
 //using namespace std;
