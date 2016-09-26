@@ -1,22 +1,24 @@
-# RMAKE - Rapid C++ Project Creator
+# RMAKE - Rapid Testable C++ Project Creator
 
 ## Description
 
-RMake is a command line utility for creating C++ projects using [CMake](https://cmake.org/). It also creates as Test sub-project using [Micro Test](https://bitbucket.org/rajinder_yadav/micro_test).
+RMake is a command line utility for creating C++ projects using [CMake](https://cmake.org/). It also creates a Test sub-project using [Micro Test](https://bitbucket.org/rajinder_yadav/micro_test).
 
-To use the **rmake** Ruby script from anywhere, on Linux add the following alias to your **~/.bachrc** file.
+To use the **rmake** Ruby script
 
-For example I have _rmake_ located under my User folder: **~/dev/rmake/**, so my alias is.
+1. On Linux add the following alias to your **~/.bachrc** file (of course your path will be different).
 
-```bash
-alias rmake='~/dev/rmake/rmake.rb'
-```
+    ```bash
+    alias rmake='~/dev/rmake/rmake.rb'
+    ```
 
-No Windows you will need to edit the **PATH** environment variable and add the folder path to where rmake.rb is located.
+    **Note**: I have rmake install under my User path: ~/dev/cpp/
+
+1. On Windows you will need to edit the **PATH** environment variable and add the folder path to where rmake.rb is located.
 
 ## Basic Usage
 
-Let's go through the steps of creating a simple "hello" project.
+Let's go through the steps of creating a simple "hello" project using rmake.
 
 1. Project "hello" Creation, project is created under folder 'hello'.
 
@@ -46,7 +48,12 @@ Let's go through the steps of creating a simple "hello" project.
 
 ## Watch Video
 
-[![Video](./vid.png)](https://youtu.be/pcHCPYbXdvM)
+[![Video](./vid.png)](https://www.youtube.com/watch?v=OQskZ0Z5uqA)
+
+## Micro Test - Testing Your Project
+RMake creates a test sub-folder and use the latest Micro Test header file, it basically pull it from the Micro Test Git repository.
+
+To learn more about how to write tests using [Micro Test check out the project site](https://bitbucket.org/rajinder_yadav/micro_test).
 
 ---
 ## Importing Eclipse Project (Linux)
@@ -87,7 +94,7 @@ File -> New -> "Make project with existing code"
 1. browse to the existing project root
 1. click finish
 
-We need to determine where the Include and Lib folder can be found. 
+We need to determine where the Include and Lib folder can be found.
 To do this from VC++ command prompt type:
 
 ```
