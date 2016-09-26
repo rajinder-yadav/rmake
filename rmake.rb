@@ -123,12 +123,20 @@ end
 
 # Generate a makefile inside the build sub-folder
 def genCMakeLinux( build_type )
-  puts "RMake> Creating #{build_type} Linux GNU Make makefile "
   checkInProjectFolder
   Dir.chdir( "build" )
   FileUtils.rm_rf( "./")
 
-  system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  if( $fLinuxOS )
+    puts "RMake> Creating #{build_type} Linux GNU GCC Make makefile "
+    system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  elsif( $fMinGW )
+    puts "RMake> Creating #{build_type} MinGW GNU GCC Make makefile "
+    system( "cmake -G \"MinGW Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  else
+    puts "RMake> Creating #{build_type} Linux GNU GCC Make makefile "
+    system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  end
   Dir.chdir( ".." )
 end
 
@@ -151,7 +159,7 @@ def showUsage
   puts "Use: rmake <project_name> <source_header_files>\n\n"
   puts "To re-generate a CMake project file, cd into the project folder and type:\n\n"
   puts "rmake g:eclipse - Eclipse CDT project"
-  puts "rmake g:make    - Linux GNU makefile"
+  puts "rmake g:make    - Linux GNU GCC makefile (Plus MinGW and Mac)"
   puts "rmake g:nmake   - VC++ NMake makefile\n\n"
   puts "Optional build type flags are:"
   puts "\n  g:debug for Debug build (default)"
@@ -164,6 +172,7 @@ end
 $fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
 $fLinuxOS      = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
 $fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
+$fMinGW        = true if( ENV["MSYSTEM"] =~ /MINGW32/i || ENV["PATH"] =~ /mingw/i )
 
 if( ARGV.size == 0 || ARGV[0] == '?' || ARGV[0] == '-help' )
   showUsage
@@ -284,8 +293,8 @@ source_file = source_file_cache
 Dir.chdir( "../.." )
 
 # Generate Makefile project
-genCMakeLinux( build_type )
-
+genCMakeLinux( build_type ) if( $fLinuxOS || $fMinGW )
+genCMakeVisualStudio( build_type ) if( $fVisualCPP || $fVisualStudio )
 Dir.chdir( ".." )
 
 # == MAIN END ===
