@@ -112,7 +112,7 @@ def genCMakeEclipse( build_type )
   Dir.chdir( "build" )
   FileUtils.rm_rf( "./")
 
-  if( $fLinuxOS )
+  if( $fLinuxOS || $fMacOS )
     puts "RMake> Creating #{build_type} Linux Eclipse project makefile "
     system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
   else
@@ -128,7 +128,7 @@ def genCMakeLinux( build_type )
   Dir.chdir( "build" )
   FileUtils.rm_rf( "./")
 
-  if( $fLinuxOS )
+  if( $fLinuxOS || $fMacOS )
     puts "RMake> Creating #{build_type} Linux GNU GCC Make makefile "
     system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
   elsif( $fMinGW )
@@ -171,7 +171,8 @@ end
 # === MAIN START ===
 
 $fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
-$fLinuxOS      = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
+$fLinuxOS      = true if( RUBY_PLATFORM =~ /linux/i || `uname` =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
+$fMacOS        = true if( `uname` =~ /darwin/i )
 $fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
 $fMinGW        = true if( ENV["MSYSTEM"] =~ /MINGW32/i || ENV["PATH"] =~ /mingw/i )
 
@@ -299,7 +300,7 @@ source_file = source_file_cache
 Dir.chdir( "../.." )
 
 # Generate Makefile project
-if( $fLinuxOS || $fMinGW )
+if( $fLinuxOS || $fMinGW || $fMacOS )
   genCMakeLinux( build_type )
 elsif( $fVisualCPP || $fVisualStudio )
   genCMakeVisualStudio( build_type )
