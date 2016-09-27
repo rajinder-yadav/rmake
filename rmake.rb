@@ -299,8 +299,11 @@ source_file = source_file_cache
 Dir.chdir( "../.." )
 
 # Generate Makefile project
-genCMakeLinux( build_type ) if( $fLinuxOS || $fMinGW )
-genCMakeVisualStudio( build_type ) if( $fVisualCPP || $fVisualStudio )
+if( $fLinuxOS || $fMinGW )
+  genCMakeLinux( build_type )
+elsif( $fVisualCPP || $fVisualStudio )
+  genCMakeVisualStudio( build_type )
+end
 Dir.chdir( ".." )
 
 # == MAIN END ===
