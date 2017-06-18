@@ -8,7 +8,7 @@ To use the **rmake** Ruby script
 
 1. On Linux add the following alias to your **~/.bachrc** file (of course your path will be different).
 
-    ```bash
+    ```sh
     alias rmake='~/dev/rmake/rmake.rb'
     ```
 
@@ -20,11 +20,11 @@ To use the **rmake** Ruby script
 
 Let's go through the steps of creating a simple "hello" project using rmake.
 
-### Project "hello" Creation. 
+### Project "hello" Creation
 
 The project is created under folder 'hello'.
 
-```bash
+```sh
 cd /tmp
 rmake hello
 ```
@@ -33,24 +33,24 @@ rmake hello
 
 Makefile is located under sub-folder build.
 
-```bash
+```sh
 cd hello/build
 make
 ```
 
-### Running hello program.
+### Running hello program
 
 The executable can be found under the build folder.
 
-```bash
+```sh
 ./hello
 ```
 
-### Running the Test Program.
+### Running the Test Program
 
 The test program is found under build/test/ sub-folder. Initially one failing test is created for you to follow.
 
-```bash
+```sh
 ./test/test.hello
 ```
 
@@ -59,11 +59,11 @@ The test program is found under build/test/ sub-folder. Initially one failing te
 [![Video](./vid.png)](https://www.youtube.com/watch?v=OQskZ0Z5uqA)
 
 ## Micro Test - Testing Your Project
+
 RMake creates a test sub-folder under src/ and uses the latest Micro Test header file, it basically pulls it from the Micro Test Git repository.
 
 To learn more about how to write tests using [Micro Test](https://bitbucket.org/rajinder_yadav/micro_test) check out the project site. You will be amazed how simple and fast it is to write test code.
 
----
 ## Importing Eclipse Project (Linux)
 
 Launch Eclipse, then from the file menu select:
@@ -90,7 +90,6 @@ Next expand on "C/C++ General" and select "Path & Symbols"
 
 You should now be able to build and debug your C++ project.
 
-
 ## Importing the Eclipse project (Windows & VC++)
 
 Now we import our project into Eclipse.
@@ -105,7 +104,7 @@ File -> New -> "Make project with existing code"
 We need to determine where the Include and Lib folder can be found.
 To do this from VC++ command prompt type:
 
-```
+```sh
 echo %VSINSTALLDIR%
 echo %WindowsSdkDir%
 ```
@@ -117,7 +116,7 @@ Once the project is imported, select it and right-click and pick "Properties" to
 1. Under "Addtional libpath" click on the "+" icon
 1. Enter path to Lib folder, if should be something like
 
-```
+```pre
 "C:\Program Files\Microsoft SDKs\Windows\v7.0A\Lib"
 OR
 "C:\Program Files\Microsoft Visual Studio 10.0\VC\lib"
@@ -150,4 +149,3 @@ You should be able to build and run your project.
 **Web:** http://labs.devmentor.org
 
 **Email:** info@devmentor.org
-
