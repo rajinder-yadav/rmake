@@ -4,24 +4,34 @@ project( <%= project_name %> )
 # Define boost path explicitly
 #set( BOOST_INCLUDE "/home/yadav/dev/cpp/boost_1.58/include/" )
 #set( BOOST_LIB "/home/yadav/dev/cpp/boost_1.58/lib/" )
+#set( ASIO_INCLUDE "/home/yadav/dev/cpp/asio/include/" )
 
 # Define boost path using environment var
-set( BOOST_INCLUDE "$ENV{BOOST_ROOT}/include/" )
-set( BOOST_LIB "$ENV{BOOST_ROOT}/lib/" )
+#set( BOOST_INCLUDE "$ENV{BOOST_ROOT}/include/" )
+#set( BOOST_LIB "$ENV{BOOST_ROOT}/lib/" )
 
-include_directories( "${PROJECT_SOURCE_DIR}" "${BOOST_INCLUDE}" )
-link_directories( "${BOOST_LIB}" )
+#include_directories( "${PROJECT_SOURCE_DIR}" "${BOOST_INCLUDE}" )
+#link_directories( "${BOOST_LIB}" )
 
+# For ASIO uncomment next line and delete line that follows it.
+#include_directories( "${PROJECT_SOURCE_DIR}" "${ASIO_INCLUDE}" )
+include_directories( "${PROJECT_SOURCE_DIR}" )
 set( SOURCE_FILES <%= source_file.join(' ') %> )
 set( HEADER_FILES <%= header_file.join(' ') %> )
-
 add_executable( <%= project_name %> ${SOURCE_FILES} ${HEADER_FILES} )
 
 # C++11 Support, note to add thread support need to link with pthread
-#add_definitions( "-std=c++11" )
+add_definitions( "-std=c++11" )
 
-#find_package( Threads )
+# C++17 Support, note to add thread support need to link with pthread
+#add_definitions( "-std=c++17" )
+
+# ASIO with C++11
+#add_definitions( "-DASIO_STANDALONE" )
+
+find_package( Threads )
+set( LIB_FILES pthread )
 #set( LIB_FILES pthread boost_system boost_thread boost_regex boost_date_time boost_serialization )
-#target_link_libraries( <%= project_name %> ${LIB_FILES} ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries( <%= project_name %> ${LIB_FILES} ${CMAKE_THREAD_LIBS_INIT} )
 
 #add_subdirectory( test )
