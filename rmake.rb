@@ -1,14 +1,17 @@
 #!/usr/bin/env ruby
 #
-# Author: Rajinder Yadav <info@devmentor.org>
-# Date: May 21, 2012
-# Web : labs.devmentor.org
+# Project: Rapid Make
+# Author:  Rajinder Yadav <info@devmentor.org>
+# Date:    May 21, 2012
+# Web :    labs.devmentor.org
 
-# CMake list file generator and project creator
-# specifically designed for making an Eclipse project
+# A utility to create CMake based project with
+# support for testing using Micro Test.
 
-RMAKE_VERSION = "1.5.0"
+RMAKE_VERSION = "1.6.7"
 
+require "openssl"
+require "open-uri"
 require "fileutils"
 require "shell"
 require "erb"
@@ -16,26 +19,25 @@ require "erb"
 # Create header file if it does not exist
 #
 # Template variables:
-#   filename    - name of file being written 
+#   filename    - name of file being written
 #   headerGuard - name used for header guard
 #
-def fileSafeCreateHeader( filename )
-    
-  return if( File.exist?( filename ) )  
-  puts "RMake> Creating header file: " + filename  
-  headerGuard = filename.upcase.tr( '.', '_' )
-  rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
+def safeCreateHeaderFile( filename )
+  return if( File.exist?( filename ) )
+  puts "RMake> Creating header file: " + filename
+  headerGuard  = filename.upcase.tr( '.', '_' )
+  rmake_loc    = File.expand_path( File.dirname( __FILE__ ) )
+  template_loc = "#{rmake_loc}/templates"
 
-  title_lines  = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  header_lines = IO.readlines( "#{rmake_loc}/templates/header.trb" )
+  header_lines = IO.readlines( "#{template_loc}/title.trb" )
+  body_lines   = IO.readlines( "#{template_loc}/header.trb" )
 
-  File.open( filename, "w+" ) do |f|    
-    expanded_line = ERB.new( title_lines.join , nil, "%<>" )
-    f.puts expanded_line.result( binding )
+  File.open( filename, "w+" ) do |f|
     expanded_line = ERB.new( header_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
+    expanded_line = ERB.new( body_lines.join , nil, "%<>" )
+    f.puts expanded_line.result( binding )
   end
-    
 end
 
 # Create source file
@@ -45,36 +47,58 @@ end
 #   filename    - name of file being written
 #   headerFile  - header file of source file
 #
-def fileSafeCreateSource( filename )
+def safeCreateSourceFile( filename, header_file )
   return if( File.exist?( filename ) )
   puts "RMake> Creating source file " + filename
   rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
-  
-  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  source_lines = IO.readlines( "#{rmake_loc}/templates/source.trb" )
-  
+  template_loc = "#{rmake_loc}/templates"
+  header = "title"
+  body = case filename
+    when "main.cpp" then "main"
+    when "test.main.cpp" then "test.main"
+    else "source"
+  end
+
+  header_lines = IO.readlines( "#{template_loc}/#{header}.trb" )
+  body_lines   = IO.readlines( "#{template_loc}/#{body}.trb" )
   headerFile = filename.sub( /\.(cpp|c)$/, ".h" )
-  
+
   File.open( filename, "w+" ) do |f|
-    expanded_line = ERB.new( title_lines.join , nil, "%<>" )
+    expanded_line = ERB.new( header_lines.join , nil, "%<>" )
     f.puts expanded_line.result( binding )
-    if( File.exist?( headerFile ) )
-      expanded_line = ERB.new( source_lines.join , nil, "%<>" )
+      expanded_line = ERB.new( body_lines.join , nil, "%<>" )
       f.puts expanded_line.result( binding )
-    end
-  end  
+  end
 end
 
 # Create project folder if it does not exist
 def projectSafeCreate( name )
   return if( File.exist?( name ) )
+  puts "RMake> Creating project folder #{name}"
   Dir.mkdir( name )
+  Dir.chdir( name )
+  FileUtils.touch( "CHANGE-LOG.md" )
+  FileUtils.touch( "Copyright.txt" )
+  FileUtils.touch( "LICENSE.txt" )
+  FileUtils.touch( "README.md" )
+  folders = ["docs", "include", "lib",]
+  folders.each do |folder|
+    if( ! Dir.exist?( folder ) )
+      puts "RMake> Creating sub-folder #{name}/#{folder}"
+      Dir.mkdir( folder )
+    end
+  end
+  Dir.chdir( ".." )
 end
 
 # Check if executing rmake from project's root folder
-# a proper project folder will have a 'build' and 'src' sub-folder
+# A proper project folder will have a 'build' and 'src' sub-folder
 def checkInProjectFolder
-  if( !(Dir.exist?( "build" ) && Dir.exist?( "src" ) ) )
+  if( Dir.exist?( "src" ) )
+     if( ! Dir.exist?( "build" ) )
+        Dir.mkdir( "build" )
+     end
+  else
     puts "RMake Error!\nMust run this command from the project root folder."
     puts "Project root folder must have a src and build sub-folder."
     puts "See usage: rmake ?"
@@ -88,7 +112,7 @@ def genCMakeEclipse( build_type )
   Dir.chdir( "build" )
   FileUtils.rm_rf( "./")
 
-  if( $fLinuxOS )
+  if( $fLinuxOS || $fMacOS )
     puts "RMake> Creating #{build_type} Linux Eclipse project makefile "
     system( "cmake -G \"Eclipse CDT4 - Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
   else
@@ -100,12 +124,20 @@ end
 
 # Generate a makefile inside the build sub-folder
 def genCMakeLinux( build_type )
-  puts "RMake> Creating #{build_type} Linux GNU Make makefile "
   checkInProjectFolder
   Dir.chdir( "build" )
   FileUtils.rm_rf( "./")
 
-  system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  if( $fLinuxOS || $fMacOS )
+    puts "RMake> Creating #{build_type} Linux GNU GCC Make makefile "
+    system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  elsif( $fMinGW )
+    puts "RMake> Creating #{build_type} MinGW GNU GCC Make makefile "
+    system( "cmake -G \"MinGW Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  else
+    puts "RMake> Creating #{build_type} Linux GNU GCC Make makefile "
+    system( "cmake -G \"Unix Makefiles\" -D CMAKE_BUILD_TYPE=#{build_type} ../src" )
+  end
   Dir.chdir( ".." )
 end
 
@@ -120,7 +152,7 @@ def genCMakeVisualStudio( build_type )
   Dir.chdir( ".." )
 end
 
-# Display rmake usage in the console 
+# Display rmake usage in the console
 def showUsage
   puts "RMake v#{RMAKE_VERSION} - CMake project file generator"
   puts "Created by Rajinder Yadav <info@devmentor.org>"
@@ -128,7 +160,7 @@ def showUsage
   puts "Use: rmake <project_name> <source_header_files>\n\n"
   puts "To re-generate a CMake project file, cd into the project folder and type:\n\n"
   puts "rmake g:eclipse - Eclipse CDT project"
-  puts "rmake g:make    - Linux GNU makefile"
+  puts "rmake g:make    - Linux GNU GCC makefile (Plus MinGW and Mac)"
   puts "rmake g:nmake   - VC++ NMake makefile\n\n"
   puts "Optional build type flags are:"
   puts "\n  g:debug for Debug build (default)"
@@ -139,14 +171,16 @@ end
 # === MAIN START ===
 
 $fVisualCPP    = true if( ENV["VCINSTALLDIR"] != nil )
-$fLinuxOS      = true if( RUBY_PLATFORM =~ /linux/i || system("uname") =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
+$fLinuxOS      = true if( RUBY_PLATFORM =~ /linux/i || `uname` =~ /linux/i || ENV["OSTYPE"] =~ /linux/i )
+$fMacOS        = true if( `uname` =~ /darwin/i )
 $fVisualStudio = true if( ENV["VCINSTALLDIR"] =~ /Visual Studio/i )
+$fMinGW        = true if( ENV["MSYSTEM"] =~ /MINGW32/i || ENV["PATH"] =~ /mingw/i )
 
 if( ARGV.size == 0 || ARGV[0] == '?' || ARGV[0] == '-help' )
   showUsage
 end
 
-# create projects folder layout
+# Create projects folder layout
 arg_list = ARGV
 
 # Determine the project build type, Debug (default) or Release
@@ -158,12 +192,12 @@ if( build_type_index.nil? )
   build_type = "Release" if( !build_type_index.nil? )
 end
 
-puts "RMake> Build type #{build_type}"
+puts "RMake> #{build_type} Build"
 
 arg_list.delete_at( build_type_index ) if( !build_type_index.nil? )
 
-# if g:eclipse, g:make, g:nmake is passed
-# re-generate project makefile and exit
+# If g:eclipse, g:make, g:nmake is passed
+# Re-generate project makefile and exit
 case( arg_list[0] )
 when "g:eclipse"
   genCMakeEclipse( build_type )
@@ -177,84 +211,100 @@ when "g:nmake"
 end
 
 project_name = arg_list[0]
+test_project_name = "test.#{project_name}"
+
 if( project_name =~ /\.(c|cpp|h|hpp)/ )
   puts "RMake> Error!\nProject name must be supplied as the first argument."
   puts "See usage: rmake ?"
   exit( false )
 end
 
-puts "RMake> Project name #{project_name}"
+puts "RMake> Creating Project #{project_name}"
 projectSafeCreate( project_name )
 Dir.chdir( project_name )
 
 header_file = []
 source_file = []
 
-# collect project files (header, source)
+# Collect project files (header, source)
 if( arg_list.size > 1 )
   header_file = arg_list.grep /(\w*\.h|\w*\.hpp)/
   source_file = arg_list.grep /(\w*\.c|\w*\.cpp)/
 end
 
-# create project build, src folders
+# Create project sub-folders: build, include, src, test
 if( !Dir.exist? "build" )
-  puts "RMake> Creating build sub-folder"
+  puts "RMake> Creating sub-folder #{project_name}/build"
   Dir.mkdir( "build" )
 end
 
 if( !Dir.exist? "src" )
-  puts "RMake> Creating project src folder"
+  puts "RMake> Creating sub-folder #{project_name}/src" 
   Dir.mkdir( "src" )
   Dir.chdir( "src" )
+  Dir.mkdir( "include" )
+  puts "RMake> Creating sub-folder #{project_name}/src/include"
   Dir.mkdir( "test" )
-  puts "RMake> Creating test sub-folder"
-  Dir.chdir( ".." )
+  puts "RMake> Creating sub-folder #{project_name}/src/test"
+  Dir.chdir( "include" )
+  # Fix for Windows SSL CERT Error!
+  if( ENV["OS"] =~ /windows/i || ENV["PATH"] =~ /windows/i )
+	  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp", {ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE} )
+  else
+	  micro_test = open( "https://bitbucket.org/rajinder_yadav/micro_test/raw/master/src/include/micro-test.hpp" )
+  end
+  IO.copy_stream( micro_test, "./micro-test.hpp" )
+  Dir.chdir( "../.." )
 end
 
-# create blank source, header files
+# Create blank source, header files
 Dir.chdir( "src" )
 
 header_file.each do |filename|
-  fileSafeCreateHeader( filename )
+  safeCreateHeaderFile( filename )
 end
 
-# if no source file specified, assume a main.cpp blank project
+# If no source file specified, assume a main.cpp blank project
 source_file << "main.cpp" if source_file.empty?
-
 source_file.each do |filename|
-  fileSafeCreateSource( filename )
+  safeCreateSourceFile( filename, header_file )
 end
 
-# create a generic CMakeLists.txt file
+# Create project CMakeLists.txt file
 puts "RMake> Creating project CMakeLists.txt file"
 rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
-cmake_lines  = IO.readlines( "#{rmake_loc}/templates/cmakelists.trb" )
+cmake_lines = IO.readlines( "#{rmake_loc}/templates/cmakelists.trb" )
 
 File.open( "CMakeLists.txt", "w" ) do |file|
   expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
   file.puts expanded_line.result( binding )
 end
 
-if( File.exist?( "main.cpp" ) )
-  rmake_loc = File.expand_path( File.dirname( __FILE__ ) )
+# Create test.main.cpp source file.
+Dir.chdir( "test" )
+source_file_cache = source_file
+source_file = ["test.main.cpp"]
+safeCreateSourceFile( "test.main.cpp", header_file )
 
-  title_lines = IO.readlines( "#{rmake_loc}/templates/title.trb" )
-  main_lines = IO.readlines( "#{rmake_loc}/templates/main.trb" )
-  filename = "main.cpp"
-  
-  File.open( filename, "w+" ) do |f|        
-      expanded_line = ERB.new( title_lines.join , nil, "%<>" )
-      f.puts expanded_line.result( binding )
-      expanded_line = ERB.new( main_lines.join, nil, "%<>" )
-      f.puts expanded_line.result( binding )
-  end
+# Create a Test CMakeLists.txt file
+puts "RMake> Creating Test project CMakeLists.txt file"
+rmake_loc   = File.expand_path( File.dirname( __FILE__ ) )
+cmake_lines = IO.readlines( "#{rmake_loc}/templates/cmakelists.test.trb" )
+
+File.open( "CMakeLists.txt", "w" ) do |file|
+  expanded_line = ERB.new( cmake_lines.join , nil, "%<>" )
+  file.puts expanded_line.result( binding )
 end
 
-Dir.chdir( ".." )
+source_file = source_file_cache
+Dir.chdir( "../.." )
 
-# generate Eclipse project
-genCMakeEclipse( build_type )
-
+# Generate Makefile project
+if( $fLinuxOS || $fMinGW || $fMacOS )
+  genCMakeLinux( build_type )
+elsif( $fVisualCPP || $fVisualStudio )
+  genCMakeVisualStudio( build_type )
+end
 Dir.chdir( ".." )
 
 # == MAIN END ===
