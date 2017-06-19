@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.6.8
+
+* Added C++17 CMake compile settings, need to uncomment.
+* Clearned markdown in README.
+
 ## Version 1.6.7
 
 * Fixed Ruby SSL CERT error on Windows.
