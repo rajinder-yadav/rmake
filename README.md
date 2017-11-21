@@ -139,13 +139,3 @@ You should be able to build and run your project.
 ### Thank You for using RMake, your support is very appreciated!
 
 ### Happy Hacking =)
----
-## Contact
-
-**Rajinder Yadav**
-
-**Labs DevMentor.org Corp.**
-
-**Web:** http://labs.devmentor.org
-
-**Email:** info@devmentor.org
